@@ -51,6 +51,10 @@ app.post("/urls", (req, res) => {
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
+function generateRandomString() {
+
+}
+
 
 // Allows server to retrieve or "listen" to requests.
 app.listen(PORT, () => {
