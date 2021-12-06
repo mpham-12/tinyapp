@@ -34,11 +34,10 @@ app.get('/urls', (req, res) => {
 });
 
 //Request for '/urls/:shortURL'=> :shortURL can be replaced with any link since its a parameter. 
-app.get('/urls/:shortURL', (req, res)=>{
-  const templateVars= {shortURL: req.params.shortURL, longURL: req.params.longURL};
-  res.render('urls_show', templateVars)
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  res.render("urls_show", templateVars);
 });
-
 // Allows server to retrieve or "listen" to requests.
 app.listen(PORT, () => {
   console.log(`Example app listening on ${PORT}!`)
