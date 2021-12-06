@@ -33,6 +33,11 @@ app.get('/urls', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
+//Request for '/urls/:shortURL'=> :shortURL can be replaced with any link since its a parameter. 
+app.get('/urls/:shortURL', (req, res)=>{
+  const templateVars= {shortURL: req.params.shortURL, longURL: req.params.longURL};
+  res.render('urls_show', templateVars)
+});
 
 // Allows server to retrieve or "listen" to requests.
 app.listen(PORT, () => {
