@@ -3,7 +3,7 @@ const app = express();
 const PORT = 8080;
 
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // tells Express app to use EJS as template engine
 app.set('view engine', 'ejs');
@@ -11,6 +11,12 @@ app.set('view engine', 'ejs');
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+// random string generator (6 characters)
+const shortString = function generateRandomString() {
+  let random = Math.random().toString(36).slice(2, 8);
+  return random;
 };
 
 // express.get takes in 2 parameters (request, response). 
@@ -40,20 +46,24 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+
 //Request for '/urls/:shortURL'=> :shortURL can be replaced with any link since its a parameter. 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
+
 app.post("/urls", (req, res) => {
+  urlDatabase[shortString()] = req.body.longURL;
+  console.log(urlDatabase);
   console.log(req.body);  // Log the POST request body to the console
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
-function generateRandomString() {
-  return Math.random().toString(36).slice(7);
-}
+
+
+
 
 // Allows server to retrieve or "listen" to requests.
 app.listen(PORT, () => {
