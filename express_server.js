@@ -8,6 +8,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // tells Express app to use EJS as template engine
 app.set('view engine', 'ejs');
 
+//Middleware
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -79,9 +83,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = req.body.longUrl;
-    res.redirect('/urls');
+  res.redirect('/urls');
 })
 
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
+})
 
 // Allows server to retrieve or "listen" to requests.
 app.listen(PORT, () => {
