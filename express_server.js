@@ -26,35 +26,30 @@ const generateRandomString = function() {
 // express.get takes in 2 parameters (request, response). 
 // When client is connected to /, they recieve "hello" on their end.
 app.get('/', (req, res) => {
-  res.send('hello!');
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-// Incorporates JS and HTML. Responds with bolded text when client requests /hello. 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  res.redirect('/urls');
 });
 
 // When client requests for /urls, server responds with templateVars.
 // .render takes 2 params (file/path, variable).
 // urls_index.ejs is a template file.
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const username= req.cookies['user_name'];
+  const templateVars = { urls: urlDatabase, username: username };
   res.render('urls_index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const username= req.cookies['user_name'];
+  const templateVars = {username: username };
+  res.render("urls_new", templateVars);
 });
 
 
 //Request for '/urls/:shortURL'=> :shortURL can be replaced with any link since its a parameter. 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL] };
+  const username= req.cookies['user_name'];
+  const templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL], username: username  };
   res.render("urls_show", templateVars);
 });
 
@@ -87,7 +82,12 @@ app.post("/urls/:shortURL", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  res.cookie('user_name', req.body.username);
+  res.redirect('/urls');
+})
+
+app.post("/logout", (req, res)=>{
+res.clearCookie('user_name');
   res.redirect('/urls');
 })
 
