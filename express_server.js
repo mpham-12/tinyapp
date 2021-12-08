@@ -12,6 +12,19 @@ app.set('view engine', 'ejs');
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -33,14 +46,14 @@ app.get('/', (req, res) => {
 // .render takes 2 params (file/path, variable).
 // urls_index.ejs is a template file.
 app.get('/urls', (req, res) => {
-  const username = req.cookies['user_name'];
-  const templateVars = { urls: urlDatabase, username: username };
+  const userId = req.cookies['user_id'];
+  const templateVars = { urls: urlDatabase, user: users[userId] };
   res.render('urls_index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const username = req.cookies['user_name'];
-  const templateVars = { username: username };
+  const userId = req.cookies['user_id'];
+  const templateVars = { user: users[userId] };
   res.render("urls_new", templateVars);
 });
 
@@ -49,14 +62,14 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   longURL = urlDatabase[shortURL]
-  const username = req.cookies['user_name'];
-  const templateVars = { shortURL: shortURL, longURL: longURL, username: username };
+  const userId = req.cookies['user_id'];
+  const templateVars = { shortURL: shortURL, longURL: longURL, user: users[userId] };
   res.render("urls_show", templateVars);
 });
 
-app.get("/register", (req, res)=>{
-  const username = req.cookies['user_name'];
-  res.render('registration', {username});
+app.get("/register", (req, res) => {
+  const userId = req.cookies['user_id'];
+  res.render('registration', { user: users[userId] });
 })
 
 app.post("/urls", (req, res) => {
@@ -86,13 +99,30 @@ app.post("/urls/:shortURL", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  res.cookie('user_name', req.body.username);
   res.redirect('/urls');
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_name');
+  res.clearCookie('user_id');
   res.redirect('/urls');
+})
+
+app.post('/register', (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+
+  users[id] = {
+    id,
+    email,
+    password
+  };
+  res.cookie('user_id', id);
+  res.redirect('/urls')
+})
+//temp:
+app.get('/users.json', (req, res)=>{
+res.json(users);
 })
 
 
