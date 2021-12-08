@@ -33,14 +33,14 @@ app.get('/', (req, res) => {
 // .render takes 2 params (file/path, variable).
 // urls_index.ejs is a template file.
 app.get('/urls', (req, res) => {
-  const username= req.cookies['user_name'];
+  const username = req.cookies['user_name'];
   const templateVars = { urls: urlDatabase, username: username };
   res.render('urls_index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const username= req.cookies['user_name'];
-  const templateVars = {username: username };
+  const username = req.cookies['user_name'];
+  const templateVars = { username: username };
   res.render("urls_new", templateVars);
 });
 
@@ -48,11 +48,16 @@ app.get("/urls/new", (req, res) => {
 //Request for '/urls/:shortURL'=> :shortURL can be replaced with any link since its a parameter. 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const username= req.cookies['user_name'];
-  const templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL], username: username  };
+  longURL = urlDatabase[shortURL]
+  const username = req.cookies['user_name'];
+  const templateVars = { shortURL: shortURL, longURL: longURL, username: username };
   res.render("urls_show", templateVars);
 });
 
+app.get("/register", (req, res)=>{
+  const username = req.cookies['user_name'];
+  res.render('registration', {username});
+})
 
 app.post("/urls", (req, res) => {
   const shortString = generateRandomString();
@@ -64,8 +69,7 @@ app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
-}
-);
+});
 
 
 
@@ -86,10 +90,12 @@ app.post("/login", (req, res) => {
   res.redirect('/urls');
 })
 
-app.post("/logout", (req, res)=>{
-res.clearCookie('user_name');
+app.post("/logout", (req, res) => {
+  res.clearCookie('user_name');
   res.redirect('/urls');
 })
+
+
 
 // Allows server to retrieve or "listen" to requests.
 app.listen(PORT, () => {
