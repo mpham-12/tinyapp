@@ -36,6 +36,7 @@ const generateRandomString = function() {
   return random;
 };
 
+
 // express.get takes in 2 parameters (request, response). 
 // When client is connected to /, they recieve "hello" on their end.
 app.get('/', (req, res) => {
@@ -85,7 +86,26 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/login", (req, res) => {
+  const userId = req.cookies['user_id'];
+  res.render('login', { user: users[userId] })
+})
 
+app.post('/login', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  for (let userId in users) {
+    const user = users[userId];
+
+    if (user && user.password === password) {
+      res.cookie('user_id', user.id);
+      res.redirect('/urls');
+      return
+    }
+  }
+  res.status(400).send('Inccorect email/password. Please try again.')
+})
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
@@ -135,6 +155,8 @@ app.post('/register', (req, res) => {
 app.get('/users.json', (req, res) => {
   res.json(users);
 })
+
+app
 
 
 
