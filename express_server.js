@@ -57,6 +57,10 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  const userId = req.cookies['user_id'];
+  res.render('registration', { user: users[userId] });
+})
 
 //Request for '/urls/:shortURL'=> :shortURL can be replaced with any link since its a parameter. 
 app.get("/urls/:shortURL", (req, res) => {
@@ -67,10 +71,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/register", (req, res) => {
-  const userId = req.cookies['user_id'];
-  res.render('registration', { user: users[userId] });
-})
+
 
 app.post("/urls", (req, res) => {
   const shortString = generateRandomString();
@@ -112,17 +113,27 @@ app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  for (let userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      res.status(400).send('Sorry, the email has already been taken.');
+      return;
+    } else if (!password || !email) {
+      res.status(400).send('Enter a valid email or password')
+    }
+  }
   users[id] = {
     id,
     email,
     password
   };
   res.cookie('user_id', id);
-  res.redirect('/urls')
+  res.redirect('/urls');
 })
+
 //temp:
-app.get('/users.json', (req, res)=>{
-res.json(users);
+app.get('/users.json', (req, res) => {
+  res.json(users);
 })
 
 
