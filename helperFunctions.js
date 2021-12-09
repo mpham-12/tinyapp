@@ -3,9 +3,16 @@ const generateRandomString = function() {
   return random;
 };
 
+const checkEmail = (email, database) => {
+  for (let userId in database) {
+    if (email === database[userId].email) {
+      return database[userId];
+    }
+}
+return false;
+};
 
 
 
 
-
-module.exports = { generateRandomString, }
+module.exports = { generateRandomString, checkEmail }
