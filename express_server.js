@@ -104,7 +104,7 @@ app.post('/login', (req, res) => {
       return
     }
   }
-  res.status(400).send('Inccorect email/password. Please try again.')
+  res.status(403).send('Inccorect email/password. Please try again.')
 })
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -119,9 +119,6 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect('/urls');
 })
 
-app.post("/login", (req, res) => {
-  res.redirect('/urls');
-})
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
@@ -136,10 +133,10 @@ app.post('/register', (req, res) => {
   for (let userId in users) {
     const user = users[userId];
     if (user.email === email) {
-      res.status(400).send('Sorry, the email has already been taken.');
+      res.status(403).send('Sorry, the email has already been taken.');
       return;
     } else if (!password || !email) {
-      res.status(400).send('Enter a valid email or password')
+      res.status(403).send('Enter a valid email or password')
     }
   }
   users[id] = {
