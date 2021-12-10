@@ -13,22 +13,19 @@ const checkEmail = (email, database) => {
 };
 
 const userUrls = (id, database) => {
-  console.log(id);
   const urlsByUser = {};
-  console.log('userUrl');
   for (shortURL in database) {
-    console.log('shortURL', shortURL);
     if (database[shortURL]['userID'] === id) {
-      console.log('left side', database, shortURL, userID);
       urlsByUser[shortURL] = {
         longURL: database[shortURL]['longURL'],
         userID: database[shortURL]['userID'],
       }
     }
   }
-  console.log(urlsByUser);
   return urlsByUser;
 };
+
+
 
 
 
