@@ -12,17 +12,17 @@
     </div>
 <% if (user) {%>
   <%= `Logged in as: ${user.email}!` %>
-  <form method="POST" action="/logout">
-  <input type="submit" value="Log Out">
+  <form class= "ml-5" method="POST" action="/logout">
+  <input class="btn btn-primary" type="submit" value="Log Out">
 </form>
   <% } else { %>
     <form method="POST" action="/login">
       
       
-      <button type="submit"><a href="/login">Log In</a></button>
+      <button class="btn btn-light" type="submit"><a href="/login">Log In</a></button>
     </form>
     <form method="POST" action="/register">
-      <button type="submit"><a href="/register">Register</a></button>
+      <button class="btn btn-light ml-5"  type="submit"><a href="/register">Register</a></button>
     </form>
   <% } %>
   </nav>

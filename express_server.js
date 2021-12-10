@@ -74,8 +74,8 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { urlDatabase, userURLS, shortURL, longURL: urlDatabase[shortURL].longURL, user: users[userID] };
   if (!userID) {
     return res.status(400).send('Please register/log in to use TinyApp.');
-  } 
-    res.render('urls_show', templateVars);
+  }
+  res.render('urls_show', templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -109,7 +109,7 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
-  
+
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: userId
