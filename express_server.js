@@ -71,7 +71,7 @@ app.get("/urls/:shortURL", (req, res) => {
   userID = req.session.user_id;
   console.log('this is the userID', userID);
   const userURLS = userUrls(userID, urlDatabase);
-  const templateVars = { urlDatabase, userURLS, shortURL, user: users[userID] };
+  const templateVars = { urlDatabase, userURLS, shortURL, longURL: urlDatabase[shortURL].longURL, user: users[userID] };
   if (!userID) {
     return res.status(400).send('Please register/log in to use TinyApp.');
   } 
@@ -119,7 +119,7 @@ app.post("/urls/:shortURL", (req, res) => {
     urlDatabase[shortURL].longURL = req.body.longUrl;
     return res.redirect('/urls');
   }
-  res.send('Please register/log in to use TinyApp.');
+  res.status(400).send('Please register/log in to use TinyApp.');
 });
 
 
@@ -127,7 +127,7 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
-  if (userId && userId === urlDatabase[shortURL].userID) {
+  if (userId) {
     delete urlDatabase[shortURL];
     res.redirect('/urls');
     return;
