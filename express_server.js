@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 // Functions
@@ -15,26 +15,26 @@ app.use(cookieSession({ name: 'session', keys: ['i-love-coding'] }));
 
 //Objects:
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+  'userRandomID': {
+    id: 'userRandomID',
+    email: 'user@example.com',
+    password: 'purple-monkey-dinosaur'
   },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
+  'user2RandomID': {
+    id: 'user2RandomID',
+    email: 'user2@example.com',
+    password: 'dishwasher-funk'
   }
 }
 
 const urlDatabase = {
   b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
+    longURL: 'https://www.tsn.ca',
+    userID: 'aJ48lW'
   },
   i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW"
+    longURL: 'https://www.google.ca',
+    userID: 'aJ48lW'
   }
 };
 
@@ -61,17 +61,17 @@ app.get('/urls', (req, res) => {
 });
 
 //allows you to create a new short url if logged in. else redirects you to /login page.
-app.get("/urls/new", (req, res) => {
+app.get('/urls/new', (req, res) => {
   const userId = req.session.user_id;
   const templateVars = { user: users[userId] };
   if (!userId) {
     return res.redirect('/login');
   }
-  res.render("urls_new", templateVars);
+  res.render('urls_new', templateVars);
 });
 
 //shows user's url details pertaining to their account. else shows html error page. 
-app.get("/urls/:shortURL", (req, res) => {
+app.get('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.user_id;
   const userURLS = userUrls(userID, urlDatabase);
@@ -89,7 +89,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 //redirects to long url when short url is clicked.
-app.get("/u/:shortURL", (req, res) => {
+app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   if (!urlDatabase[shortURL]) {
     return res.status(400).send('Link does not exist.');
@@ -99,7 +99,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 //redirects to /urls when new url is added.
-app.post("/urls", (req, res) => {
+app.post('/urls', (req, res) => {
   const shortString = generateRandomString();
   const userId = req.session.user_id;
 
@@ -115,7 +115,7 @@ app.post("/urls", (req, res) => {
 });
 
 // updates long url pertaining to account.
-app.post("/urls/:shortURL", (req, res) => {
+app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
 
@@ -132,7 +132,7 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 //deletes url from database pertaining to account.
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
   if (userId) {
@@ -144,7 +144,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 //shows /register page if not a user. else redirects to /urls.
-app.get("/register", (req, res) => {
+app.get('/register', (req, res) => {
   const userId = req.session.user_id;
   if (!userId) {
     return res.render('registration', { user: users[userId] });
@@ -153,7 +153,7 @@ app.get("/register", (req, res) => {
 });
 
 // redirects to urls index page if logged in. else shows /login page
-app.get("/login", (req, res) => {
+app.get('/login', (req, res) => {
   const userId = req.session.user_id;
   if (!users[userId]) {
     return res.render('login', { user: users[userId] });
@@ -204,7 +204,7 @@ app.post('/login', (req, res) => {
 });
 
 //clears cookies and redirects to /login page.
-app.post("/logout", (req, res) => {
+app.post('/logout', (req, res) => {
   delete req.session.user_id;
   res.redirect('/login');
 });
@@ -217,7 +217,7 @@ app.get('/urlDatabase.json', (req, res) => {
   res.json(urlDatabase);
 });
 
-// Allows server to retrieve or "listen" to requests.
+// Allows server to retrieve or 'listen' to requests.
 app.listen(PORT, () => {
   console.log(`Example app listening on ${PORT}!`);
 });
