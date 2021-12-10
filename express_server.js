@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const bcrypt = require('bcrypt');
 // Functions
 const { generateRandomString, checkEmail, userUrls } = require('./helperFunctions');
 
@@ -82,7 +83,6 @@ app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
   const userId = req.session.user_id;
-
   if (!urlDatabase[shortURL]) {
     return res.status(400).send('Link does not exist.');
   }
@@ -167,7 +167,7 @@ app.post('/register', (req, res) => {
   users[id] = {
     id,
     email,
-    password
+    password: bcrypt.hashSync(password, 10)
   };
   req.session.user_id = id;
   console.log(req.session.user_id);
@@ -181,7 +181,7 @@ app.post('/login', (req, res) => {
   const user = checkEmail(email, users);
 
   if (user) {
-    if (user.email === email && user.password === password) {
+    if (user && bcrypt.compareSync(password, user.password)) {
       req.session.user_id = user.id;
       res.redirect('/urls');
       return
