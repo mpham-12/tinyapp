@@ -181,7 +181,6 @@ app.post('/register', (req, res) => {
     password: bcrypt.hashSync(password, 10)
   };
   req.session.user_id = id;
-  console.log(req.session.user_id);
   res.redirect('/urls');
 });
 
@@ -205,7 +204,7 @@ app.post('/login', (req, res) => {
 
 //clears cookies and redirects to /login page.
 app.post('/logout', (req, res) => {
-  delete req.session.user_id;
+  req.session = null;
   res.redirect('/login');
 });
 
