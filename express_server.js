@@ -14,18 +14,7 @@ app.set('view engine', 'ejs');
 app.use(cookieSession({ name: 'session', keys: ['i-love-coding'] }));
 
 //Objects:
-const users = {
-  'userRandomID': {
-    id: 'userRandomID',
-    email: 'user@example.com',
-    password: 'purple-monkey-dinosaur'
-  },
-  'user2RandomID': {
-    id: 'user2RandomID',
-    email: 'user2@example.com',
-    password: 'dishwasher-funk'
-  }
-};
+const users = {};
 
 const urlDatabase = {
   b6UTxQ: {
@@ -188,6 +177,7 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const user = checkEmail(email, users);
 
   if (!user) {
