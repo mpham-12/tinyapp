@@ -25,7 +25,7 @@ const users = {
     email: 'user2@example.com',
     password: 'dishwasher-funk'
   }
-}
+};
 
 const urlDatabase = {
   b6UTxQ: {
@@ -45,7 +45,7 @@ const urlDatabase = {
 app.get('/', (req, res) => {
   const userId = req.session.user_id;
   if (!userId) {
-    return res.redirect('/login')
+    return res.redirect('/login');
   }
   res.redirect('/urls');
 });
@@ -75,10 +75,10 @@ app.get('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.user_id;
   const userURLS = userUrls(userID, urlDatabase);
-  if (!urlDatabase[shortURL]){
+  if (!urlDatabase[shortURL]) {
     return res.status(400).send('Link does not exist.');
   }
-  if (userID !== urlDatabase[shortURL].userID){
+  if (userID !== urlDatabase[shortURL].userID) {
     return res.status(400).send('You do not have access to this URL.');
   }
   const templateVars = { urlDatabase, userURLS, shortURL, longURL: urlDatabase[shortURL].longURL, user: users[userID] };
@@ -191,16 +191,16 @@ app.post('/login', (req, res) => {
   const password = req.body.password;
   const user = checkEmail(email, users);
 
-    if (!user) {
-      res.status(400).send('Sorry, the user does not exist.');
-      return;
-    }
-    if (user && bcrypt.compareSync(password, user.password)) {
-      req.session.user_id = user.id;
-      res.redirect('/urls');
-      return;
-    }
-    return res.status(400).send('Inccorect email/password. Please try again.');
+  if (!user) {
+    res.status(400).send('Sorry, the user does not exist.');
+    return;
+  }
+  if (user && bcrypt.compareSync(password, user.password)) {
+    req.session.user_id = user.id;
+    res.redirect('/urls');
+    return;
+  }
+  return res.status(400).send('Inccorect email/password. Please try again.');
 });
 
 //clears cookies and redirects to /login page.
