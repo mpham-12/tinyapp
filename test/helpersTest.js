@@ -62,7 +62,6 @@ describe('#userUrls', () => {
         userID: 'fgfgf'
       }
     };
-
     assert.deepEqual(userURLS, expectedResult);
   });
   it('should return an empty object for a non-existent user', () => {
