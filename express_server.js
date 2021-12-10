@@ -5,7 +5,7 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 // Functions
-const { generateRandomString, checkEmail } = require('./helperFunctions');
+const { generateRandomString, checkEmail, userUrls } = require('./helperFunctions');
 
 //Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -27,9 +27,17 @@ const users = {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
+
 };
+
 
 //Routes
 app.get('/', (req, res) => {
@@ -44,7 +52,7 @@ app.get('/urls', (req, res) => {
   const userId = req.session.user_id;
   const templateVars = { urls: urlDatabase, user: users[userId] };
   if (!userId) {
-    return res.send('Please register/log in to use TinyApp.')
+    return res.status(400).send('Please register/log in to use TinyApp.')
   }
   res.render('urls_index', templateVars);
 });
@@ -60,59 +68,71 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  longURL = urlDatabase[shortURL]
-  const userId = req.session.user_id;
-  const templateVars = { shortURL: shortURL, longURL: longURL, user: users[userId] };
-  if (!userId) {
-    return res.send('Please register/log in to use TinyApp.')
-  }
-  if (!urlDatabase[shortURL]) {
-    return res.send('Link does not exist.')
-  }
-  return res.render("urls_show", templateVars);
+  userID = req.session.user_id;
+  console.log('this is the userID', userID);
+  const userURLS = userUrls(userID, urlDatabase);
+  const templateVars = { urlDatabase, userURLS, shortURL, user: users[userID] };
+  if (!userID) {
+    return res.status(400).send('Please register/log in to use TinyApp.');
+  } 
+    res.render('urls_show', templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   const userId = req.session.user_id;
-  if (!userId) {
-    return res.send('Please register/log in to use TinyApp.');
-  } if (!urlDatabase[shortURL]) {
-    return res.send('Link does not exist.');
+
+  if (!urlDatabase[shortURL]) {
+    return res.status(400).send('Link does not exist.');
   }
   return res.redirect(longURL);
 });
 
 app.post("/urls", (req, res) => {
   const shortString = generateRandomString();
-  urlDatabase[shortString] = req.body.longURL;
   const userId = req.session.user_id;
+  console.log('urldatabase', urlDatabase);
+  console.log('shortstring', shortString);
+  urlDatabase[shortString] = {
+    longURL: req.body.longURL,
+    userID: userId
+  }
+  console.log('urldatabase UPDATED', urlDatabase);
+  console.log('req.body', req.body);
   if (!userId) {
-    return res.send('Please register/log in to use TinyApp.');
+    return res.status(400).send('Please register/log in to use TinyApp.');
   }
   res.redirect(`/urls/${shortString}`);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longUrl;
   const userId = req.session.user_id;
-  if (!userId) {
-    return res.send('Please register/log in to use TinyApp.');
+  
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: userId
   }
-  res.redirect('/urls');
-})
+
+  if (userId && userId === urlDatabase[shortURL].userID) {
+    urlDatabase[shortURL].longURL = req.body.longUrl;
+    return res.redirect('/urls');
+  }
+  res.send('Please register/log in to use TinyApp.');
+});
+
+
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
-  if (!userId) {
-    return res.send('Please register/log in to use TinyApp.');
+  if (userId && userId === urlDatabase[shortURL].userID) {
+    delete urlDatabase[shortURL];
+    res.redirect('/urls');
+    return;
   }
-  delete urlDatabase[shortURL];
-  res.redirect('/urls');
-  return;
+  return res.status(400).send('Please register/log in to use TinyApp.');
 })
 
 app.get("/register", (req, res) => {
@@ -137,11 +157,11 @@ app.post('/register', (req, res) => {
   const password = req.body.password;
 
   if (!password || !email) {
-    res.status(403).send('Enter a valid email or password');
+    res.status(400).send('Enter a valid email or password');
     return;
   }
   if (checkEmail(email, users)) {
-    res.status(403).send('Sorry, the email has already been taken.');
+    res.status(400).send('Sorry, the email has already been taken.');
     return;
   }
   users[id] = {
@@ -166,7 +186,7 @@ app.post('/login', (req, res) => {
       res.redirect('/urls');
       return
     }
-    res.status(403).send('Inccorect email/password. Please try again.')
+    res.status(400).send('Inccorect email/password. Please try again.')
   }
 })
 
@@ -178,6 +198,9 @@ app.post("/logout", (req, res) => {
 //temp:
 app.get('/users.json', (req, res) => {
   res.json(users);
+})
+app.get('/urlDatabase.json', (req, res) => {
+  res.json(urlDatabase);
 })
 
 
